@@ -1,0 +1,2997 @@
+{
+  "project_summary": "BrandGuard is an AI sidekick that lives inside Figma, Slack, Google Docs and Webflow; one click scans any image, slide or tweet against your living brand bible and returns a 0-100 BrandScore plus one-click fixes for colors, fonts, tone, logo clearance, accessibility and regulated phrases, while a Slack bot posts the before/after gif to the team, every approved correction retrains your private LLM so suggestions get eerily on-brand, the free tier gives 25 scans a month, Starter $29 gives 500 scans and Slack bot, Growth $199 adds API and compliance exports, Enterprise is SOC-2 on-prem, moat is a patent-pending vector logo extractor that works on raster images plus a tone-fingerprint model trained only on your past copy, growth comes from a public BrandScore badge that turns every shared asset into a lead-gen form and a template marketplace where creators sell BrandGuard-approved Canva kits and we keep 30%",
+  "technology_stack": {
+    "frontend": "React",
+    "backend": "Go",
+    "database": "PostgreSQL",
+    "deployment": "AWS"
+  },
+  "phases": [
+    {
+      "issues": [
+        {
+          "id": "BG-001",
+          "title": "Initialize Monorepo Structure and Go Workspace",
+          "description": "Establish the root monorepo structure using Go Modules and a React workspace to support multi-service development.",
+          "type": "setup",
+          "status": "todo",
+          "priority": "high",
+          "scope": "Root directory, /services/brand-engine, /services/api, /web/dashboard",
+          "technical_checklist": {
+            "setup_tasks": [
+              "Initialize git repository",
+              "Create root go.mod file",
+              "Configure npm/yarn workspaces"
+            ],
+            "implementation_tasks": [
+              "Define directory structure for microservices",
+              "Add .gitignore for Go and Node.js",
+              "Setup linting configurations (golangci-lint, eslint)"
+            ],
+            "testing_tasks": [
+              "Verify workspace build success"
+            ],
+            "documentation_tasks": [
+              "Update README with monorepo structure guide"
+            ]
+          },
+          "acceptance_criteria": {
+            "criteria": [
+              "Root directory contains clear service separation",
+              "Go modules are initialized in sub-directories",
+              "Frontend workspace correctly links packages"
+            ],
+            "automated_tests": false
+          },
+          "branch_name": "setup/repo-init",
+          "recommended_commits": [
+            "feat: initialize monorepo structure",
+            "chore: add linting and gitignore"
+          ],
+          "estimated_hours": 4,
+          "dependencies": [],
+          "tags": [
+            "setup",
+            "infrastructure"
+          ],
+          "notes": "Ensure Go modules are configured to support local path imports for shared libraries."
+        },
+        {
+          "id": "BG-002",
+          "title": "Define PostgreSQL Schema for Core Entities",
+          "description": "Create the initial database migration scripts for users, organizations, assets, and BrandScore logs.",
+          "type": "setup",
+          "status": "todo",
+          "priority": "high",
+          "scope": "Database schema definitions and migration scripts",
+          "technical_checklist": {
+            "setup_tasks": [
+              "Install migration tool (e.g., golang-migrate)"
+            ],
+            "implementation_tasks": [
+              "Create users table",
+              "Create organizations table",
+              "Create assets table with vector metadata",
+              "Create brand_score_logs table"
+            ],
+            "testing_tasks": [
+              "Run migration up/down tests"
+            ],
+            "documentation_tasks": [
+              "Document schema relationships in ERD"
+            ]
+          },
+          "acceptance_criteria": {
+            "criteria": [
+              "Migrations execute successfully against a local Postgres instance",
+              "Schema supports foreign key constraints between users and organizations"
+            ],
+            "automated_tests": true
+          },
+          "branch_name": "setup/db-schema",
+          "recommended_commits": [
+            "feat: add initial db migrations",
+            "feat: define core entities schema"
+          ],
+          "estimated_hours": 6,
+          "dependencies": [
+            "BG-001"
+          ],
+          "tags": [
+            "database",
+            "backend"
+          ],
+          "notes": "Use UUIDs for primary keys to ensure scalability across microservices."
+        },
+        {
+          "id": "BG-003",
+          "title": "Configure GitHub Actions CI/CD Pipeline",
+          "description": "Implement automated CI workflows for linting, testing, and building Go/React services.",
+          "type": "deployment",
+          "status": "todo",
+          "priority": "high",
+          "scope": ".github/workflows directory",
+          "technical_checklist": {
+            "setup_tasks": [
+              "Create .github/workflows directory"
+            ],
+            "implementation_tasks": [
+              "Define Go test workflow",
+              "Define React build/test workflow",
+              "Add staging deployment trigger"
+            ],
+            "testing_tasks": [
+              "Verify workflow triggers on push"
+            ],
+            "documentation_tasks": [
+              "Add CI/CD status badge to README"
+            ]
+          },
+          "acceptance_criteria": {
+            "criteria": [
+              "CI pipeline passes on PR creation",
+              "Build artifacts are generated for staging"
+            ],
+            "automated_tests": true
+          },
+          "branch_name": "setup/ci-cd",
+          "recommended_commits": [
+            "feat: add github actions for CI",
+            "chore: configure staging deployment pipeline"
+          ],
+          "estimated_hours": 8,
+          "dependencies": [
+            "BG-001"
+          ],
+          "tags": [
+            "ci-cd",
+            "devops"
+          ],
+          "notes": "Ensure secrets are referenced correctly for AWS deployment."
+        },
+        {
+          "id": "BG-004",
+          "title": "Implement Environment Configuration Management",
+          "description": "Setup a centralized environment variable management system using .env files and a Go configuration loader.",
+          "type": "setup",
+          "status": "todo",
+          "priority": "medium",
+          "scope": "Configuration loaders in Go and React",
+          "technical_checklist": {
+            "setup_tasks": [
+              "Create .env.example files"
+            ],
+            "implementation_tasks": [
+              "Implement Go config loader using viper",
+              "Setup React environment variable injection"
+            ],
+            "testing_tasks": [
+              "Verify config loading in local dev environment"
+            ],
+            "documentation_tasks": [
+              "Document required environment variables"
+            ]
+          },
+          "acceptance_criteria": {
+            "criteria": [
+              "Application fails gracefully if required env vars are missing",
+              "Dev/Staging configs are separated"
+            ],
+            "automated_tests": true
+          },
+          "branch_name": "setup/env-config",
+          "recommended_commits": [
+            "feat: implement environment config loader",
+            "chore: add .env.example templates"
+          ],
+          "estimated_hours": 4,
+          "dependencies": [
+            "BG-001"
+          ],
+          "tags": [
+            "configuration",
+            "security"
+          ],
+          "notes": "Do not commit actual .env files to the repository."
+        },
+        {
+          "id": "BG-005",
+          "title": "Dockerize Local Development Environment",
+          "description": "Create docker-compose configuration to spin up PostgreSQL and the Go backend services locally.",
+          "type": "setup",
+          "status": "todo",
+          "priority": "medium",
+          "scope": "docker-compose.yml and Dockerfiles",
+          "technical_checklist": {
+            "setup_tasks": [
+              "Create Dockerfiles for Go services"
+            ],
+            "implementation_tasks": [
+              "Configure docker-compose.yml for DB and API",
+              "Setup volume mapping for hot-reloading"
+            ],
+            "testing_tasks": [
+              "Verify services start via docker-compose up"
+            ],
+            "documentation_tasks": [
+              "Update README with local dev setup instructions"
+            ]
+          },
+          "acceptance_criteria": {
+            "criteria": [
+              "Single command starts full local stack",
+              "Database persists data across container restarts"
+            ],
+            "automated_tests": false
+          },
+          "branch_name": "setup/docker-compose",
+          "recommended_commits": [
+            "feat: add docker-compose for local dev",
+            "feat: add dockerfiles for services"
+          ],
+          "estimated_hours": 6,
+          "dependencies": [
+            "BG-002",
+            "BG-004"
+          ],
+          "tags": [
+            "docker",
+            "dev-experience"
+          ],
+          "notes": "Use alpine images to keep container sizes small."
+        },
+        {
+          "id": "BG-006",
+          "title": "Setup Shared Go Library for Common Utilities",
+          "description": "Create a shared Go package for common logic like logging, middleware, and error handling.",
+          "type": "setup",
+          "status": "todo",
+          "priority": "medium",
+          "scope": "/pkg/common",
+          "technical_checklist": {
+            "setup_tasks": [
+              "Initialize /pkg directory"
+            ],
+            "implementation_tasks": [
+              "Implement structured logger",
+              "Implement standard API response wrapper",
+              "Implement common middleware"
+            ],
+            "testing_tasks": [
+              "Unit test common utilities"
+            ],
+            "documentation_tasks": [
+              "Add usage examples for shared packages"
+            ]
+          },
+          "acceptance_criteria": {
+            "criteria": [
+              "Common package is importable by all microservices",
+              "Consistent logging format across services"
+            ],
+            "automated_tests": true
+          },
+          "branch_name": "setup/shared-pkg",
+          "recommended_commits": [
+            "feat: create shared common library",
+            "feat: add logging and middleware utilities"
+          ],
+          "estimated_hours": 5,
+          "dependencies": [
+            "BG-001"
+          ],
+          "tags": [
+            "backend",
+            "refactoring"
+          ],
+          "notes": "Keep dependencies in /pkg minimal to avoid circular imports."
+        },
+        {
+          "id": "BG-007",
+          "title": "Initialize Frontend React Dashboard Workspace",
+          "description": "Bootstrap the React dashboard application within the monorepo using Vite.",
+          "type": "setup",
+          "status": "todo",
+          "priority": "high",
+          "scope": "/web/dashboard",
+          "technical_checklist": {
+            "setup_tasks": [
+              "Initialize Vite project in /web/dashboard"
+            ],
+            "implementation_tasks": [
+              "Configure Tailwind CSS",
+              "Setup React Router",
+              "Configure base API client"
+            ],
+            "testing_tasks": [
+              "Verify dashboard dev server starts"
+            ],
+            "documentation_tasks": [
+              "Add frontend setup guide"
+            ]
+          },
+          "acceptance_criteria": {
+            "criteria": [
+              "Dashboard app runs on localhost",
+              "Tailwind styles are correctly applied"
+            ],
+            "automated_tests": false
+          },
+          "branch_name": "setup/frontend-init",
+          "recommended_commits": [
+            "feat: initialize react dashboard",
+            "feat: configure tailwind and routing"
+          ],
+          "estimated_hours": 5,
+          "dependencies": [
+            "BG-001"
+          ],
+          "tags": [
+            "frontend",
+            "react"
+          ],
+          "notes": "Ensure the dashboard is configured to proxy API requests to the Go backend."
+        }
+      ],
+      "batchNumber": 1
+    },
+    {
+      "issues": [
+        {
+          "id": "BG-012",
+          "title": "Implement JWT Authentication Middleware in Go",
+          "description": "Develop a robust middleware for the Auth service to validate JWT tokens, handle token refreshing, and manage user session context.",
+          "type": "feature",
+          "status": "todo",
+          "priority": "high",
+          "scope": "Auth service middleware and token validation logic",
+          "technical_checklist": {
+            "setup_tasks": [
+              "Initialize JWT signing keys in AWS Secrets Manager",
+              "Define Auth context struct"
+            ],
+            "implementation_tasks": [
+              "Implement ParseToken function",
+              "Create middleware for protected routes",
+              "Implement token refresh endpoint"
+            ],
+            "testing_tasks": [
+              "Unit test token validation",
+              "Test expired token scenarios"
+            ],
+            "documentation_tasks": [
+              "Document Auth header requirements"
+            ]
+          },
+          "acceptance_criteria": {
+            "criteria": [
+              "Requests without valid JWT return 401",
+              "User context is correctly injected into request context",
+              "Token refresh logic handles rotation"
+            ],
+            "automated_tests": true
+          },
+          "branch_name": "backend/auth",
+          "recommended_commits": [
+            "feat: add jwt validation middleware",
+            "feat: implement token refresh logic"
+          ],
+          "estimated_hours": 12,
+          "dependencies": [],
+          "tags": [
+            "auth",
+            "security",
+            "go"
+          ],
+          "notes": "Ensure signing keys are rotated via environment variables."
+        },
+        {
+          "id": "BG-013",
+          "title": "Develop Raster-to-Vector Logo Detection Service",
+          "description": "Create the core Go service to process image uploads and identify brand logos using computer vision libraries.",
+          "type": "feature",
+          "status": "todo",
+          "priority": "high",
+          "scope": "Logo extractor service image processing pipeline",
+          "technical_checklist": {
+            "setup_tasks": [
+              "Integrate OpenCV or similar Go-compatible vision library",
+              "Configure S3 bucket for image ingestion"
+            ],
+            "implementation_tasks": [
+              "Implement image normalization",
+              "Develop logo detection algorithm",
+              "Add vectorization output logic"
+            ],
+            "testing_tasks": [
+              "Test with various logo formats (PNG, JPG)",
+              "Validate vector output accuracy"
+            ],
+            "documentation_tasks": [
+              "Document image processing pipeline architecture"
+            ]
+          },
+          "acceptance_criteria": {
+            "criteria": [
+              "Service accepts image uploads",
+              "Logo detection returns bounding box coordinates",
+              "Vectorization output is valid SVG"
+            ],
+            "automated_tests": true
+          },
+          "branch_name": "backend/logo-extractor",
+          "recommended_commits": [
+            "feat: add image processing pipeline",
+            "feat: implement logo detection logic"
+          ],
+          "estimated_hours": 24,
+          "dependencies": [],
+          "tags": [
+            "cv",
+            "logo-extractor",
+            "go"
+          ],
+          "notes": "Focus on performance for high-resolution image processing."
+        },
+        {
+          "id": "BG-014",
+          "title": "Implement BrandScore Calculation Engine",
+          "description": "Build the core algorithm that evaluates assets against brand guidelines and returns a 0-100 compliance score.",
+          "type": "feature",
+          "status": "todo",
+          "priority": "high",
+          "scope": "Scoring engine logic and rule evaluation",
+          "technical_checklist": {
+            "setup_tasks": [
+              "Define Rule interface",
+              "Setup scoring database schema"
+            ],
+            "implementation_tasks": [
+              "Implement color palette validator",
+              "Implement typography rule engine",
+              "Create aggregate scoring function"
+            ],
+            "testing_tasks": [
+              "Unit test individual rule scoring",
+              "Test aggregate score calculation"
+            ],
+            "documentation_tasks": [
+              "Document scoring algorithm methodology"
+            ]
+          },
+          "acceptance_criteria": {
+            "criteria": [
+              "Scores are calculated between 0-100",
+              "Engine handles missing rule definitions gracefully",
+              "Performance is under 200ms per asset"
+            ],
+            "automated_tests": true
+          },
+          "branch_name": "backend/scoring-engine",
+          "recommended_commits": [
+            "feat: implement base scoring engine",
+            "feat: add rule evaluation logic"
+          ],
+          "estimated_hours": 16,
+          "dependencies": [],
+          "tags": [
+            "scoring",
+            "algorithm",
+            "go"
+          ],
+          "notes": "Ensure the engine is extensible for future brand rules."
+        },
+        {
+          "id": "BG-015",
+          "title": "Build Tone-Fingerprint LLM Fine-Tuning Pipeline",
+          "description": "Create the data ingestion and training pipeline to fine-tune the private LLM based on team-approved copy corrections.",
+          "type": "feature",
+          "status": "todo",
+          "priority": "high",
+          "scope": "LLM pipeline for tone analysis",
+          "technical_checklist": {
+            "setup_tasks": [
+              "Setup data ingestion worker",
+              "Configure model training environment"
+            ],
+            "implementation_tasks": [
+              "Implement data cleaning for training set",
+              "Create fine-tuning trigger endpoint",
+              "Add model versioning logic"
+            ],
+            "testing_tasks": [
+              "Test data ingestion pipeline",
+              "Verify model training trigger"
+            ],
+            "documentation_tasks": [
+              "Document fine-tuning workflow"
+            ]
+          },
+          "acceptance_criteria": {
+            "criteria": [
+              "Pipeline successfully ingests approved copy",
+              "Training job triggers correctly",
+              "Model versioning is tracked in DB"
+            ],
+            "automated_tests": true
+          },
+          "branch_name": "backend/tone-model",
+          "recommended_commits": [
+            "feat: add llm training pipeline",
+            "feat: implement data ingestion worker"
+          ],
+          "estimated_hours": 30,
+          "dependencies": [],
+          "tags": [
+            "llm",
+            "ai",
+            "tone-analysis"
+          ],
+          "notes": "Requires GPU-enabled instances for training."
+        },
+        {
+          "id": "BG-016",
+          "title": "Integrate Stripe Subscription Management API",
+          "description": "Implement the backend logic to handle Stripe webhooks and manage user subscription tiers.",
+          "type": "feature",
+          "status": "todo",
+          "priority": "medium",
+          "scope": "Billing service and Stripe integration",
+          "technical_checklist": {
+            "setup_tasks": [
+              "Configure Stripe SDK",
+              "Setup webhook listener endpoint"
+            ],
+            "implementation_tasks": [
+              "Implement subscription creation",
+              "Handle Stripe webhook events",
+              "Update user tier in PostgreSQL"
+            ],
+            "testing_tasks": [
+              "Test webhook signature verification",
+              "Test subscription upgrade/downgrade flows"
+            ],
+            "documentation_tasks": [
+              "Document billing API endpoints"
+            ]
+          },
+          "acceptance_criteria": {
+            "criteria": [
+              "Stripe webhooks are processed securely",
+              "User tiers update in real-time",
+              "Billing errors are logged"
+            ],
+            "automated_tests": true
+          },
+          "branch_name": "backend/billing",
+          "recommended_commits": [
+            "feat: add stripe integration",
+            "feat: implement webhook handler"
+          ],
+          "estimated_hours": 14,
+          "dependencies": [
+            "BG-012"
+          ],
+          "tags": [
+            "billing",
+            "stripe",
+            "api"
+          ],
+          "notes": "Use Stripe test mode for all initial development."
+        },
+        {
+          "id": "BG-017",
+          "title": "Database Schema Migration for Auth Service",
+          "description": "Define and apply PostgreSQL migrations for user accounts, roles, and authentication metadata.",
+          "type": "setup",
+          "status": "todo",
+          "priority": "high",
+          "scope": "Database schema for Auth service",
+          "technical_checklist": {
+            "setup_tasks": [
+              "Install golang-migrate",
+              "Create migration files"
+            ],
+            "implementation_tasks": [
+              "Define users table",
+              "Define roles and permissions tables",
+              "Add indexes for performance"
+            ],
+            "testing_tasks": [
+              "Test migration up/down scripts"
+            ],
+            "documentation_tasks": [
+              "Update database schema documentation"
+            ]
+          },
+          "acceptance_criteria": {
+            "criteria": [
+              "Migrations run successfully",
+              "Schema matches requirements",
+              "Indexes are optimized for lookups"
+            ],
+            "automated_tests": true
+          },
+          "branch_name": "backend/auth-db",
+          "recommended_commits": [
+            "feat: add user auth schema",
+            "feat: add indexes for auth tables"
+          ],
+          "estimated_hours": 6,
+          "dependencies": [],
+          "tags": [
+            "database",
+            "migrations",
+            "auth"
+          ],
+          "notes": "Ensure migrations are idempotent."
+        },
+        {
+          "id": "BG-018",
+          "title": "Implement Async Task Queue for Logo Processing",
+          "description": "Introduce a task queue (e.g., RabbitMQ or AWS SQS) to handle heavy logo extraction tasks asynchronously.",
+          "type": "feature",
+          "status": "todo",
+          "priority": "high",
+          "scope": "Task queue integration for logo service",
+          "technical_checklist": {
+            "setup_tasks": [
+              "Provision SQS queue",
+              "Configure Go worker pool"
+            ],
+            "implementation_tasks": [
+              "Implement producer for logo tasks",
+              "Implement consumer for logo processing",
+              "Add error handling and retries"
+            ],
+            "testing_tasks": [
+              "Test queue throughput",
+              "Test worker failure recovery"
+            ],
+            "documentation_tasks": [
+              "Document queue architecture"
+            ]
+          },
+          "acceptance_criteria": {
+            "criteria": [
+              "Logo processing is non-blocking",
+              "Failed tasks are retried",
+              "Queue metrics are monitored"
+            ],
+            "automated_tests": true
+          },
+          "branch_name": "backend/logo-queue",
+          "recommended_commits": [
+            "feat: add async task queue",
+            "feat: implement worker pool"
+          ],
+          "estimated_hours": 10,
+          "dependencies": [
+            "BG-013"
+          ],
+          "tags": [
+            "infrastructure",
+            "async",
+            "performance"
+          ],
+          "notes": "Use SQS for managed scalability."
+        },
+        {
+          "id": "BG-019",
+          "title": "Create BrandScore API Endpoints",
+          "description": "Expose RESTful endpoints for the scoring engine to allow frontend plugins to request asset compliance checks.",
+          "type": "feature",
+          "status": "todo",
+          "priority": "high",
+          "scope": "API layer for scoring engine",
+          "technical_checklist": {
+            "setup_tasks": [
+              "Define API contracts (OpenAPI/Swagger)"
+            ],
+            "implementation_tasks": [
+              "Implement POST /score endpoint",
+              "Implement GET /history endpoint",
+              "Add request validation"
+            ],
+            "testing_tasks": [
+              "Test API response formats",
+              "Test error handling"
+            ],
+            "documentation_tasks": [
+              "Update API documentation"
+            ]
+          },
+          "acceptance_criteria": {
+            "criteria": [
+              "Endpoints return correct JSON structure",
+              "Validation errors are descriptive",
+              "API is secured with JWT"
+            ],
+            "automated_tests": true
+          },
+          "branch_name": "backend/scoring-api",
+          "recommended_commits": [
+            "feat: add scoring api endpoints",
+            "feat: add request validation"
+          ],
+          "estimated_hours": 8,
+          "dependencies": [
+            "BG-014"
+          ],
+          "tags": [
+            "api",
+            "scoring",
+            "rest"
+          ],
+          "notes": "Ensure API follows REST best practices."
+        },
+        {
+          "id": "BG-020",
+          "title": "Implement Logging and Monitoring for Backend Services",
+          "description": "Integrate structured logging (Zap) and metrics collection (Prometheus) across all core backend services.",
+          "type": "testing",
+          "status": "todo",
+          "priority": "medium",
+          "scope": "Observability across all backend services",
+          "technical_checklist": {
+            "setup_tasks": [
+              "Configure Zap logger",
+              "Setup Prometheus exporter"
+            ],
+            "implementation_tasks": [
+              "Add middleware for request logging",
+              "Add metrics for service latency",
+              "Configure log aggregation"
+            ],
+            "testing_tasks": [
+              "Verify logs in CloudWatch",
+              "Verify metrics in Grafana"
+            ],
+            "documentation_tasks": [
+              "Document logging standards"
+            ]
+          },
+          "acceptance_criteria": {
+            "criteria": [
+              "All services emit structured logs",
+              "Latency metrics are collected",
+              "Alerts are configured for high error rates"
+            ],
+            "automated_tests": false
+          },
+          "branch_name": "backend/observability",
+          "recommended_commits": [
+            "feat: add structured logging",
+            "feat: add prometheus metrics"
+          ],
+          "estimated_hours": 12,
+          "dependencies": [],
+          "tags": [
+            "observability",
+            "monitoring",
+            "devops"
+          ],
+          "notes": "Standardize log formats across all Go services."
+        },
+        {
+          "id": "BG-021",
+          "title": "Develop User Management API Endpoints",
+          "description": "Create endpoints for user profile management, including password updates and organization association.",
+          "type": "feature",
+          "status": "todo",
+          "priority": "medium",
+          "scope": "User management service",
+          "technical_checklist": {
+            "setup_tasks": [
+              "Define user service routes"
+            ],
+            "implementation_tasks": [
+              "Implement GET /profile",
+              "Implement PATCH /profile",
+              "Implement organization management"
+            ],
+            "testing_tasks": [
+              "Test profile update scenarios",
+              "Test authorization checks"
+            ],
+            "documentation_tasks": [
+              "Document user management API"
+            ]
+          },
+          "acceptance_criteria": {
+            "criteria": [
+              "Users can only update their own profile",
+              "Organization association is enforced",
+              "Data validation is applied"
+            ],
+            "automated_tests": true
+          },
+          "branch_name": "backend/user-mgmt",
+          "recommended_commits": [
+            "feat: add user profile endpoints",
+            "feat: add org management logic"
+          ],
+          "estimated_hours": 10,
+          "dependencies": [
+            "BG-012"
+          ],
+          "tags": [
+            "user-management",
+            "api"
+          ],
+          "notes": "Ensure strict RBAC checks."
+        },
+        {
+          "id": "BG-022",
+          "title": "Implement Global Error Handling Middleware",
+          "description": "Create a centralized error handling middleware to ensure consistent error responses across all Go microservices.",
+          "type": "feature",
+          "status": "todo",
+          "priority": "medium",
+          "scope": "Global error handling for all services",
+          "technical_checklist": {
+            "setup_tasks": [
+              "Define standard error response struct"
+            ],
+            "implementation_tasks": [
+              "Implement recovery middleware",
+              "Map domain errors to HTTP status codes",
+              "Add logging for unhandled errors"
+            ],
+            "testing_tasks": [
+              "Test error propagation",
+              "Test recovery from panic"
+            ],
+            "documentation_tasks": [
+              "Document error handling strategy"
+            ]
+          },
+          "acceptance_criteria": {
+            "criteria": [
+              "All errors return consistent JSON",
+              "Panics are recovered and logged",
+              "Sensitive info is not leaked in errors"
+            ],
+            "automated_tests": true
+          },
+          "branch_name": "backend/error-handling",
+          "recommended_commits": [
+            "feat: add global error middleware",
+            "feat: implement error mapping"
+          ],
+          "estimated_hours": 6,
+          "dependencies": [],
+          "tags": [
+            "error-handling",
+            "middleware",
+            "go"
+          ],
+          "notes": "Use custom error types for domain-specific logic."
+        }
+      ],
+      "batchNumber": 2
+    },
+    {
+      "issues": [
+        {
+          "id": "BG-101",
+          "title": "Implement Protected Dashboard Shell Layout",
+          "description": "Create the main application shell using React Router and Auth0 integration to ensure authenticated access to the dashboard.",
+          "type": "feature",
+          "status": "todo",
+          "priority": "high",
+          "scope": "Dashboard layout, sidebar navigation, and route protection wrappers.",
+          "technical_checklist": {
+            "setup_tasks": [
+              "Install react-router-dom",
+              "Configure Auth0 SDK provider"
+            ],
+            "implementation_tasks": [
+              "Create MainLayout component",
+              "Implement PrivateRoute wrapper",
+              "Build responsive sidebar navigation"
+            ],
+            "testing_tasks": [
+              "Verify redirect to login for unauthenticated users",
+              "Test navigation state persistence"
+            ],
+            "documentation_tasks": [
+              "Document route protection strategy"
+            ]
+          },
+          "acceptance_criteria": {
+            "criteria": [
+              "User is redirected to login if unauthenticated",
+              "Dashboard shell renders sidebar and header",
+              "Navigation links update URL correctly"
+            ],
+            "automated_tests": true
+          },
+          "branch_name": "frontend/dashboard-shell",
+          "recommended_commits": [
+            "feat: add dashboard layout shell",
+            "feat: implement auth guards"
+          ],
+          "estimated_hours": 12,
+          "dependencies": [],
+          "tags": [
+            "frontend",
+            "auth",
+            "navigation"
+          ],
+          "notes": "Ensure the sidebar supports collapsible states for mobile responsiveness."
+        },
+        {
+          "id": "BG-102",
+          "title": "Develop Brand Bible Asset Upload UI",
+          "description": "Build the drag-and-drop interface for uploading brand assets including fonts, color palettes, and logo files.",
+          "type": "feature",
+          "status": "todo",
+          "priority": "high",
+          "scope": "File upload component, validation logic, and asset preview grid.",
+          "technical_checklist": {
+            "setup_tasks": [
+              "Install react-dropzone"
+            ],
+            "implementation_tasks": [
+              "Create DragAndDrop component",
+              "Implement file type validation (SVG, OTF, TTF)",
+              "Build asset preview grid"
+            ],
+            "testing_tasks": [
+              "Test file size limit enforcement",
+              "Verify drag-and-drop event handling"
+            ],
+            "documentation_tasks": [
+              "Document asset upload API requirements"
+            ]
+          },
+          "acceptance_criteria": {
+            "criteria": [
+              "Users can drag and drop multiple files",
+              "Invalid file types are rejected with error message",
+              "Assets appear in the grid after upload"
+            ],
+            "automated_tests": true
+          },
+          "branch_name": "frontend/brand-bible",
+          "recommended_commits": [
+            "feat: add drag-and-drop upload",
+            "feat: implement asset validation"
+          ],
+          "estimated_hours": 16,
+          "dependencies": [
+            "BG-101"
+          ],
+          "tags": [
+            "frontend",
+            "assets",
+            "ui"
+          ],
+          "notes": "Integrate with the backend S3 presigned URL flow."
+        },
+        {
+          "id": "BG-103",
+          "title": "Create Asset Scanning Modal Widget",
+          "description": "Develop a reusable modal component that triggers the Brand Engine scan process and displays real-time progress.",
+          "type": "feature",
+          "status": "todo",
+          "priority": "high",
+          "scope": "Modal overlay, progress bar, and scan initiation API call.",
+          "technical_checklist": {
+            "setup_tasks": [
+              "Create Modal portal component"
+            ],
+            "implementation_tasks": [
+              "Build scan trigger button",
+              "Implement progress polling logic",
+              "Create scan result summary view"
+            ],
+            "testing_tasks": [
+              "Verify modal open/close states",
+              "Test progress bar animation"
+            ],
+            "documentation_tasks": [
+              "Document scan API integration"
+            ]
+          },
+          "acceptance_criteria": {
+            "criteria": [
+              "Modal triggers scan on click",
+              "Progress bar updates based on API response",
+              "Results display after scan completion"
+            ],
+            "automated_tests": true
+          },
+          "branch_name": "frontend/scanner-ui",
+          "recommended_commits": [
+            "feat: add scan modal",
+            "feat: implement scan progress tracking"
+          ],
+          "estimated_hours": 14,
+          "dependencies": [
+            "BG-101"
+          ],
+          "tags": [
+            "frontend",
+            "scanner",
+            "ux"
+          ],
+          "notes": "Ensure the modal is accessible via keyboard shortcuts."
+        },
+        {
+          "id": "BG-104",
+          "title": "Develop BrandScore Badge Component",
+          "description": "Create a lightweight, embeddable React component that displays the 0-100 BrandScore for external use.",
+          "type": "feature",
+          "status": "todo",
+          "priority": "medium",
+          "scope": "Badge styling, score color coding, and data fetching.",
+          "technical_checklist": {
+            "setup_tasks": [
+              "Setup component library structure"
+            ],
+            "implementation_tasks": [
+              "Implement color logic (Red/Yellow/Green)",
+              "Build SVG badge visualization",
+              "Add prop-based configuration"
+            ],
+            "testing_tasks": [
+              "Test color thresholds",
+              "Verify responsive sizing"
+            ],
+            "documentation_tasks": [
+              "Create README for badge usage"
+            ]
+          },
+          "acceptance_criteria": {
+            "criteria": [
+              "Badge displays correct score",
+              "Colors change based on score range",
+              "Component is responsive"
+            ],
+            "automated_tests": true
+          },
+          "branch_name": "frontend/badge-component",
+          "recommended_commits": [
+            "feat: create BrandScore badge",
+            "feat: add color logic"
+          ],
+          "estimated_hours": 8,
+          "dependencies": [],
+          "tags": [
+            "frontend",
+            "component",
+            "branding"
+          ],
+          "notes": "Keep the bundle size minimal for third-party embedding."
+        },
+        {
+          "id": "BG-105",
+          "title": "Build Template Marketplace Storefront",
+          "description": "Create the UI for browsing and purchasing Canva kits within the BrandGuard dashboard.",
+          "type": "feature",
+          "status": "todo",
+          "priority": "low",
+          "scope": "Template grid, filtering, and purchase modal.",
+          "technical_checklist": {
+            "setup_tasks": [
+              "Setup marketplace data mock"
+            ],
+            "implementation_tasks": [
+              "Build template card component",
+              "Implement category filtering",
+              "Create purchase checkout flow"
+            ],
+            "testing_tasks": [
+              "Test filter functionality",
+              "Verify purchase button state"
+            ],
+            "documentation_tasks": [
+              "Document marketplace API schema"
+            ]
+          },
+          "acceptance_criteria": {
+            "criteria": [
+              "Templates are filterable by category",
+              "Purchase flow is functional",
+              "Grid layout is responsive"
+            ],
+            "automated_tests": true
+          },
+          "branch_name": "frontend/marketplace",
+          "recommended_commits": [
+            "feat: add marketplace grid",
+            "feat: implement filtering"
+          ],
+          "estimated_hours": 20,
+          "dependencies": [
+            "BG-101"
+          ],
+          "tags": [
+            "frontend",
+            "marketplace",
+            "ui"
+          ],
+          "notes": "Focus on performance optimization for large template lists."
+        },
+        {
+          "id": "BG-106",
+          "title": "Implement Global State Management",
+          "description": "Integrate TanStack Query (React Query) for efficient server state management across the dashboard.",
+          "type": "setup",
+          "status": "todo",
+          "priority": "high",
+          "scope": "QueryClient configuration and global cache settings.",
+          "technical_checklist": {
+            "setup_tasks": [
+              "Install @tanstack/react-query"
+            ],
+            "implementation_tasks": [
+              "Configure QueryClientProvider",
+              "Set default stale times",
+              "Implement devtools"
+            ],
+            "testing_tasks": [
+              "Verify cache invalidation on mutation"
+            ],
+            "documentation_tasks": [
+              "Document query patterns"
+            ]
+          },
+          "acceptance_criteria": {
+            "criteria": [
+              "Data is cached correctly",
+              "Mutations trigger UI updates",
+              "Devtools are accessible in dev mode"
+            ],
+            "automated_tests": true
+          },
+          "branch_name": "frontend/state-management",
+          "recommended_commits": [
+            "setup: add react-query",
+            "refactor: migrate API calls to hooks"
+          ],
+          "estimated_hours": 6,
+          "dependencies": [
+            "BG-101"
+          ],
+          "tags": [
+            "frontend",
+            "state",
+            "performance"
+          ],
+          "notes": "Standardize all API calls to use custom hooks."
+        },
+        {
+          "id": "BG-107",
+          "title": "Add Error Boundary and Logging",
+          "description": "Implement global error boundaries to prevent app crashes and integrate Sentry for error tracking.",
+          "type": "bug_fix",
+          "status": "todo",
+          "priority": "high",
+          "scope": "Error boundary component and Sentry initialization.",
+          "technical_checklist": {
+            "setup_tasks": [
+              "Install @sentry/react"
+            ],
+            "implementation_tasks": [
+              "Create ErrorBoundary component",
+              "Initialize Sentry",
+              "Add fallback UI"
+            ],
+            "testing_tasks": [
+              "Simulate component crash",
+              "Verify Sentry error reporting"
+            ],
+            "documentation_tasks": [
+              "Document error handling policy"
+            ]
+          },
+          "acceptance_criteria": {
+            "criteria": [
+              "App does not crash on component error",
+              "Fallback UI is displayed",
+              "Errors are logged to Sentry"
+            ],
+            "automated_tests": true
+          },
+          "branch_name": "frontend/error-handling",
+          "recommended_commits": [
+            "feat: add error boundary",
+            "feat: integrate sentry"
+          ],
+          "estimated_hours": 6,
+          "dependencies": [
+            "BG-101"
+          ],
+          "tags": [
+            "frontend",
+            "reliability",
+            "monitoring"
+          ],
+          "notes": "Ensure sensitive user data is scrubbed from Sentry logs."
+        },
+        {
+          "id": "BG-108",
+          "title": "Implement Theme Provider",
+          "description": "Set up a centralized theme provider using Tailwind CSS to ensure consistent branding across all UI components.",
+          "type": "setup",
+          "status": "todo",
+          "priority": "medium",
+          "scope": "Tailwind config and theme context.",
+          "technical_checklist": {
+            "setup_tasks": [
+              "Configure tailwind.config.js"
+            ],
+            "implementation_tasks": [
+              "Define color palette",
+              "Define typography scale",
+              "Create theme toggle context"
+            ],
+            "testing_tasks": [
+              "Verify theme application across components"
+            ],
+            "documentation_tasks": [
+              "Update design system documentation"
+            ]
+          },
+          "acceptance_criteria": {
+            "criteria": [
+              "Colors match brand guidelines",
+              "Typography is consistent",
+              "Theme is applied globally"
+            ],
+            "automated_tests": false
+          },
+          "branch_name": "frontend/theming",
+          "recommended_commits": [
+            "setup: configure tailwind theme",
+            "feat: add theme provider"
+          ],
+          "estimated_hours": 8,
+          "dependencies": [
+            "BG-101"
+          ],
+          "tags": [
+            "frontend",
+            "design-system",
+            "ui"
+          ],
+          "notes": "Use CSS variables for easy runtime theme updates."
+        },
+        {
+          "id": "BG-109",
+          "title": "Create Reusable Form Components",
+          "description": "Build a set of accessible, validated form components (Input, Select, Checkbox) using React Hook Form.",
+          "type": "feature",
+          "status": "todo",
+          "priority": "medium",
+          "scope": "Form component library and validation schema integration.",
+          "technical_checklist": {
+            "setup_tasks": [
+              "Install react-hook-form",
+              "Install zod"
+            ],
+            "implementation_tasks": [
+              "Create Input component",
+              "Create Select component",
+              "Implement Zod validation"
+            ],
+            "testing_tasks": [
+              "Test form submission",
+              "Verify validation error messages"
+            ],
+            "documentation_tasks": [
+              "Document form component usage"
+            ]
+          },
+          "acceptance_criteria": {
+            "criteria": [
+              "Forms are accessible",
+              "Validation works as expected",
+              "Components are reusable"
+            ],
+            "automated_tests": true
+          },
+          "branch_name": "frontend/form-components",
+          "recommended_commits": [
+            "feat: add form components",
+            "feat: add validation logic"
+          ],
+          "estimated_hours": 10,
+          "dependencies": [
+            "BG-101"
+          ],
+          "tags": [
+            "frontend",
+            "forms",
+            "ui"
+          ],
+          "notes": "Ensure all inputs support ARIA labels."
+        },
+        {
+          "id": "BG-110",
+          "title": "Implement API Client Service",
+          "description": "Create a centralized Axios instance with interceptors for auth token injection and response handling.",
+          "type": "setup",
+          "status": "todo",
+          "priority": "high",
+          "scope": "Axios configuration and interceptor logic.",
+          "technical_checklist": {
+            "setup_tasks": [
+              "Install axios"
+            ],
+            "implementation_tasks": [
+              "Create axios instance",
+              "Add request interceptor for JWT",
+              "Add response interceptor for 401 handling"
+            ],
+            "testing_tasks": [
+              "Verify token injection",
+              "Test 401 redirect"
+            ],
+            "documentation_tasks": [
+              "Document API service usage"
+            ]
+          },
+          "acceptance_criteria": {
+            "criteria": [
+              "Requests include auth headers",
+              "401 errors trigger re-auth",
+              "Base URL is configurable"
+            ],
+            "automated_tests": true
+          },
+          "branch_name": "frontend/api-client",
+          "recommended_commits": [
+            "feat: add axios client",
+            "feat: add auth interceptors"
+          ],
+          "estimated_hours": 6,
+          "dependencies": [
+            "BG-101"
+          ],
+          "tags": [
+            "frontend",
+            "api",
+            "security"
+          ],
+          "notes": "Ensure the interceptor handles token refresh flows."
+        },
+        {
+          "id": "BG-111",
+          "title": "Add Skeleton Loading States",
+          "description": "Implement skeleton loaders for all data-fetching components to improve perceived performance.",
+          "type": "feature",
+          "status": "todo",
+          "priority": "medium",
+          "scope": "Skeleton component library and integration.",
+          "technical_checklist": {
+            "setup_tasks": [
+              "Install react-loading-skeleton"
+            ],
+            "implementation_tasks": [
+              "Create Skeleton components",
+              "Integrate into dashboard widgets",
+              "Add loading state logic"
+            ],
+            "testing_tasks": [
+              "Verify skeleton visibility during fetch"
+            ],
+            "documentation_tasks": [
+              "Document skeleton usage"
+            ]
+          },
+          "acceptance_criteria": {
+            "criteria": [
+              "Loaders appear during data fetch",
+              "Layout shift is minimized",
+              "Loaders match component dimensions"
+            ],
+            "automated_tests": false
+          },
+          "branch_name": "frontend/skeleton-loaders",
+          "recommended_commits": [
+            "feat: add skeleton components",
+            "feat: integrate loading states"
+          ],
+          "estimated_hours": 6,
+          "dependencies": [
+            "BG-106"
+          ],
+          "tags": [
+            "frontend",
+            "ux",
+            "performance"
+          ],
+          "notes": "Use consistent animation timing."
+        },
+        {
+          "id": "BG-112",
+          "title": "Implement Toast Notifications",
+          "description": "Add a global toast notification system for user feedback on actions like uploads or scan completions.",
+          "type": "feature",
+          "status": "todo",
+          "priority": "medium",
+          "scope": "Toast provider and hook.",
+          "technical_checklist": {
+            "setup_tasks": [
+              "Install react-hot-toast"
+            ],
+            "implementation_tasks": [
+              "Configure ToastProvider",
+              "Create useToast hook",
+              "Add success/error variants"
+            ],
+            "testing_tasks": [
+              "Test notification triggers"
+            ],
+            "documentation_tasks": [
+              "Document toast usage"
+            ]
+          },
+          "acceptance_criteria": {
+            "criteria": [
+              "Notifications appear on action",
+              "Notifications auto-dismiss",
+              "Variants are styled correctly"
+            ],
+            "automated_tests": false
+          },
+          "branch_name": "frontend/notifications",
+          "recommended_commits": [
+            "feat: add toast system",
+            "feat: integrate notifications"
+          ],
+          "estimated_hours": 4,
+          "dependencies": [
+            "BG-101"
+          ],
+          "tags": [
+            "frontend",
+            "ux",
+            "feedback"
+          ],
+          "notes": "Keep notifications non-intrusive."
+        },
+        {
+          "id": "BG-113",
+          "title": "Setup E2E Testing Environment",
+          "description": "Configure Playwright for end-to-end testing of the core dashboard flows.",
+          "type": "testing",
+          "status": "todo",
+          "priority": "high",
+          "scope": "Playwright configuration and initial test suite.",
+          "technical_checklist": {
+            "setup_tasks": [
+              "Install playwright"
+            ],
+            "implementation_tasks": [
+              "Configure base URL",
+              "Write login test",
+              "Write dashboard navigation test"
+            ],
+            "testing_tasks": [
+              "Run tests in CI"
+            ],
+            "documentation_tasks": [
+              "Document test running instructions"
+            ]
+          },
+          "acceptance_criteria": {
+            "criteria": [
+              "Tests run in CI",
+              "Login flow is covered",
+              "Dashboard navigation is covered"
+            ],
+            "automated_tests": true
+          },
+          "branch_name": "frontend/e2e-testing",
+          "recommended_commits": [
+            "setup: add playwright",
+            "test: add core flow tests"
+          ],
+          "estimated_hours": 12,
+          "dependencies": [
+            "BG-101"
+          ],
+          "tags": [
+            "frontend",
+            "testing",
+            "ci"
+          ],
+          "notes": "Use mock authentication for E2E tests."
+        }
+      ],
+      "batchNumber": 3
+    },
+    {
+      "issues": [
+        {
+          "id": "BG-401",
+          "title": "Implement Figma Plugin OAuth2 Authentication Flow",
+          "description": "Establish secure authentication between the Figma plugin and the Go backend using OAuth2 to ensure user-specific brand compliance context.",
+          "type": "feature",
+          "status": "todo",
+          "priority": "high",
+          "scope": "Figma plugin client-side and Go backend auth middleware",
+          "technical_checklist": {
+            "setup_tasks": [
+              "Configure OAuth2 client credentials in AWS Cognito",
+              "Update Go backend auth routes"
+            ],
+            "implementation_tasks": [
+              "Implement Figma plugin login UI",
+              "Handle token storage in Figma client storage",
+              "Create backend JWT validation middleware"
+            ],
+            "testing_tasks": [
+              "Verify token refresh logic",
+              "Test unauthorized access scenarios"
+            ],
+            "documentation_tasks": [
+              "Update API security documentation"
+            ]
+          },
+          "acceptance_criteria": {
+            "criteria": [
+              "User can authenticate via Figma plugin",
+              "Backend correctly identifies user brand context",
+              "Tokens are securely persisted"
+            ],
+            "automated_tests": true
+          },
+          "branch_name": "integration/figma-auth",
+          "recommended_commits": [
+            "feat: add oauth2 flow for figma",
+            "feat: implement backend jwt validation"
+          ],
+          "estimated_hours": 12,
+          "dependencies": [],
+          "tags": [
+            "figma",
+            "auth",
+            "backend"
+          ],
+          "notes": "Ensure Figma's secure storage is used for tokens."
+        },
+        {
+          "id": "BG-402",
+          "title": "Develop Figma Asset Scanning API Endpoint",
+          "description": "Create a Go backend endpoint to receive Figma node data and return compliance scores.",
+          "type": "feature",
+          "status": "todo",
+          "priority": "high",
+          "scope": "Go backend API and Figma plugin data transmission",
+          "technical_checklist": {
+            "setup_tasks": [
+              "Define JSON schema for Figma node data"
+            ],
+            "implementation_tasks": [
+              "Create POST /v1/scan/figma endpoint",
+              "Integrate with Brand Engine service",
+              "Implement response serialization"
+            ],
+            "testing_tasks": [
+              "Unit test payload parsing",
+              "Load test endpoint with large node trees"
+            ],
+            "documentation_tasks": [
+              "Document API request/response schema"
+            ]
+          },
+          "acceptance_criteria": {
+            "criteria": [
+              "Endpoint accepts Figma node JSON",
+              "Brand Engine returns compliance score",
+              "Response latency < 500ms"
+            ],
+            "automated_tests": true
+          },
+          "branch_name": "integration/figma-scan-api",
+          "recommended_commits": [
+            "feat: create figma scan endpoint",
+            "refactor: integrate brand engine service"
+          ],
+          "estimated_hours": 16,
+          "dependencies": [
+            "BG-401"
+          ],
+          "tags": [
+            "figma",
+            "api",
+            "backend"
+          ],
+          "notes": "Focus on efficient JSON parsing for complex Figma trees."
+        },
+        {
+          "id": "BG-403",
+          "title": "Slack Bot: Implement Before/After Correction Image Upload",
+          "description": "Enable the Slack bot to receive processed image buffers and post them as visual feedback to the user.",
+          "type": "feature",
+          "status": "todo",
+          "priority": "high",
+          "scope": "Slack API integration and image processing service",
+          "technical_checklist": {
+            "setup_tasks": [
+              "Configure Slack App scopes (files:write)"
+            ],
+            "implementation_tasks": [
+              "Implement Slack file upload handler",
+              "Create image diffing service",
+              "Add bot notification logic"
+            ],
+            "testing_tasks": [
+              "Verify image rendering in Slack",
+              "Test error handling for failed uploads"
+            ],
+            "documentation_tasks": [
+              "Update Slack integration guide"
+            ]
+          },
+          "acceptance_criteria": {
+            "criteria": [
+              "Bot posts image to channel",
+              "Images are correctly labeled as before/after",
+              "Bot handles rate limits"
+            ],
+            "automated_tests": true
+          },
+          "branch_name": "integration/slack-visual-feedback",
+          "recommended_commits": [
+            "feat: add slack file upload support",
+            "feat: implement visual diff notification"
+          ],
+          "estimated_hours": 14,
+          "dependencies": [],
+          "tags": [
+            "slack",
+            "bot",
+            "imaging"
+          ],
+          "notes": "Use Slack's file upload API instead of external links for better privacy."
+        },
+        {
+          "id": "BG-404",
+          "title": "GDocs Add-on: Real-time Tone Check Integration",
+          "description": "Connect the GDocs add-on to the tone-fingerprint model for real-time text analysis.",
+          "type": "feature",
+          "status": "todo",
+          "priority": "medium",
+          "scope": "GDocs Add-on client and Tone-Fingerprint API",
+          "technical_checklist": {
+            "setup_tasks": [
+              "Setup Google Apps Script project"
+            ],
+            "implementation_tasks": [
+              "Implement text change listener",
+              "Create debounced API call to backend",
+              "Render tone feedback in sidebar"
+            ],
+            "testing_tasks": [
+              "Verify debounce logic",
+              "Test text analysis accuracy"
+            ],
+            "documentation_tasks": [
+              "Create user manual for GDocs add-on"
+            ]
+          },
+          "acceptance_criteria": {
+            "criteria": [
+              "Tone feedback appears in sidebar",
+              "API calls are debounced",
+              "Add-on handles network timeouts"
+            ],
+            "automated_tests": true
+          },
+          "branch_name": "integration/gdocs-tone-check",
+          "recommended_commits": [
+            "feat: add text change listener",
+            "feat: implement tone feedback sidebar"
+          ],
+          "estimated_hours": 20,
+          "dependencies": [],
+          "tags": [
+            "gdocs",
+            "nlp",
+            "frontend"
+          ],
+          "notes": "Debouncing is critical to avoid hitting API rate limits."
+        },
+        {
+          "id": "BG-405",
+          "title": "Webflow App: Asset Scanning Webhook Integration",
+          "description": "Implement a webhook receiver to trigger brand compliance scans when Webflow sites are published.",
+          "type": "feature",
+          "status": "todo",
+          "priority": "medium",
+          "scope": "Webflow API and Backend Webhook Handler",
+          "technical_checklist": {
+            "setup_tasks": [
+              "Register webhook endpoint in Webflow dashboard"
+            ],
+            "implementation_tasks": [
+              "Create POST /webhooks/webflow endpoint",
+              "Implement asset crawler",
+              "Queue scan jobs in background"
+            ],
+            "testing_tasks": [
+              "Verify webhook signature validation",
+              "Test crawler against live site"
+            ],
+            "documentation_tasks": [
+              "Document webhook security requirements"
+            ]
+          },
+          "acceptance_criteria": {
+            "criteria": [
+              "Webhook triggers scan on publish",
+              "Assets are correctly identified",
+              "Scan results stored in DB"
+            ],
+            "automated_tests": true
+          },
+          "branch_name": "integration/webflow-webhooks",
+          "recommended_commits": [
+            "feat: add webflow webhook handler",
+            "feat: implement asset crawler"
+          ],
+          "estimated_hours": 18,
+          "dependencies": [],
+          "tags": [
+            "webflow",
+            "webhook",
+            "backend"
+          ],
+          "notes": "Ensure webhook signature verification is implemented to prevent spoofing."
+        },
+        {
+          "id": "BG-406",
+          "title": "API Export Service: Compliance Data CSV Export",
+          "description": "Expose an authenticated endpoint for Growth tier users to download compliance history as CSV.",
+          "type": "feature",
+          "status": "todo",
+          "priority": "medium",
+          "scope": "Backend API and Data Export Service",
+          "technical_checklist": {
+            "setup_tasks": [
+              "Define CSV export schema"
+            ],
+            "implementation_tasks": [
+              "Create GET /v1/export/compliance endpoint",
+              "Implement CSV generator",
+              "Add user tier validation"
+            ],
+            "testing_tasks": [
+              "Verify CSV formatting",
+              "Test large dataset export performance"
+            ],
+            "documentation_tasks": [
+              "Update API documentation for export"
+            ]
+          },
+          "acceptance_criteria": {
+            "criteria": [
+              "Endpoint returns CSV file",
+              "Only Growth users can access",
+              "Data matches DB records"
+            ],
+            "automated_tests": true
+          },
+          "branch_name": "integration/api-export-csv",
+          "recommended_commits": [
+            "feat: add csv export endpoint",
+            "feat: add tier-based access control"
+          ],
+          "estimated_hours": 10,
+          "dependencies": [],
+          "tags": [
+            "api",
+            "export",
+            "backend"
+          ],
+          "notes": "Use streaming for CSV generation to handle large datasets."
+        },
+        {
+          "id": "BG-407",
+          "title": "Figma Plugin: One-Click Fix Implementation",
+          "description": "Enable the Figma plugin to apply automated fixes returned by the Brand Engine.",
+          "type": "feature",
+          "status": "todo",
+          "priority": "high",
+          "scope": "Figma Plugin UI and Figma API",
+          "technical_checklist": {
+            "setup_tasks": [
+              "Review Figma Plugin API for node modification"
+            ],
+            "implementation_tasks": [
+              "Implement 'Apply Fix' button",
+              "Map backend fix instructions to Figma node properties",
+              "Add undo support"
+            ],
+            "testing_tasks": [
+              "Verify fix application on various node types",
+              "Test undo functionality"
+            ],
+            "documentation_tasks": [
+              "Update plugin usage documentation"
+            ]
+          },
+          "acceptance_criteria": {
+            "criteria": [
+              "Fixes are applied correctly",
+              "Undo works as expected",
+              "User is notified of success"
+            ],
+            "automated_tests": true
+          },
+          "branch_name": "integration/figma-one-click-fix",
+          "recommended_commits": [
+            "feat: implement apply fix logic",
+            "feat: add undo support"
+          ],
+          "estimated_hours": 15,
+          "dependencies": [
+            "BG-402"
+          ],
+          "tags": [
+            "figma",
+            "frontend"
+          ],
+          "notes": "Be careful with Figma node locking during updates."
+        },
+        {
+          "id": "BG-408",
+          "title": "Slack Bot: Interactive Correction Approval",
+          "description": "Add interactive buttons to Slack notifications for users to approve or reject automated brand corrections.",
+          "type": "feature",
+          "status": "todo",
+          "priority": "high",
+          "scope": "Slack Block Kit and Backend Callback Handler",
+          "technical_checklist": {
+            "setup_tasks": [
+              "Configure Slack interactive components"
+            ],
+            "implementation_tasks": [
+              "Implement Block Kit message builder",
+              "Create callback endpoint for button clicks",
+              "Update DB with user decision"
+            ],
+            "testing_tasks": [
+              "Test button interactions",
+              "Verify DB state updates"
+            ],
+            "documentation_tasks": [
+              "Update Slack bot documentation"
+            ]
+          },
+          "acceptance_criteria": {
+            "criteria": [
+              "Buttons appear in Slack",
+              "Clicking buttons triggers backend action",
+              "User receives confirmation"
+            ],
+            "automated_tests": true
+          },
+          "branch_name": "integration/slack-interactive",
+          "recommended_commits": [
+            "feat: add block kit support",
+            "feat: implement interactive callbacks"
+          ],
+          "estimated_hours": 12,
+          "dependencies": [
+            "BG-403"
+          ],
+          "tags": [
+            "slack",
+            "bot",
+            "ux"
+          ],
+          "notes": "Use ephemeral messages for confirmation to reduce channel noise."
+        },
+        {
+          "id": "BG-409",
+          "title": "GDocs Add-on: Phrase Suggestion Engine",
+          "description": "Implement phrase-level suggestions in the GDocs add-on based on brand guidelines.",
+          "type": "feature",
+          "status": "todo",
+          "priority": "medium",
+          "scope": "GDocs Add-on UI and Backend Suggestion API",
+          "technical_checklist": {
+            "setup_tasks": [
+              "Define suggestion JSON format"
+            ],
+            "implementation_tasks": [
+              "Implement text highlighting for suggestions",
+              "Create suggestion tooltip UI",
+              "Add 'Accept Suggestion' functionality"
+            ],
+            "testing_tasks": [
+              "Verify highlighting accuracy",
+              "Test suggestion replacement logic"
+            ],
+            "documentation_tasks": [
+              "Update GDocs user guide"
+            ]
+          },
+          "acceptance_criteria": {
+            "criteria": [
+              "Suggestions are highlighted",
+              "Tooltips show correct replacement",
+              "Replacement works in document"
+            ],
+            "automated_tests": true
+          },
+          "branch_name": "integration/gdocs-suggestions",
+          "recommended_commits": [
+            "feat: add suggestion highlighting",
+            "feat: implement replacement logic"
+          ],
+          "estimated_hours": 18,
+          "dependencies": [
+            "BG-404"
+          ],
+          "tags": [
+            "gdocs",
+            "nlp",
+            "frontend"
+          ],
+          "notes": "Ensure text range calculations are accurate in GDocs."
+        },
+        {
+          "id": "BG-410",
+          "title": "Webflow App: Compliance Dashboard Widget",
+          "description": "Create a dashboard widget within the Webflow app to display recent scan results.",
+          "type": "feature",
+          "status": "todo",
+          "priority": "medium",
+          "scope": "Webflow App Frontend",
+          "technical_checklist": {
+            "setup_tasks": [
+              "Setup React component library for Webflow"
+            ],
+            "implementation_tasks": [
+              "Fetch scan history from backend",
+              "Build compliance score chart",
+              "Add 'Rescan' trigger button"
+            ],
+            "testing_tasks": [
+              "Verify data fetching",
+              "Test chart responsiveness"
+            ],
+            "documentation_tasks": [
+              "Update Webflow app documentation"
+            ]
+          },
+          "acceptance_criteria": {
+            "criteria": [
+              "Dashboard displays recent scores",
+              "Chart renders correctly",
+              "Rescan button works"
+            ],
+            "automated_tests": true
+          },
+          "branch_name": "integration/webflow-dashboard",
+          "recommended_commits": [
+            "feat: add compliance chart",
+            "feat: implement rescan trigger"
+          ],
+          "estimated_hours": 14,
+          "dependencies": [
+            "BG-405"
+          ],
+          "tags": [
+            "webflow",
+            "frontend",
+            "dashboard"
+          ],
+          "notes": "Use a lightweight charting library like Recharts."
+        },
+        {
+          "id": "BG-411",
+          "title": "API Export Service: Rate Limiting and Throttling",
+          "description": "Implement rate limiting on the export endpoint to protect system resources.",
+          "type": "feature",
+          "status": "todo",
+          "priority": "medium",
+          "scope": "Go backend middleware",
+          "technical_checklist": {
+            "setup_tasks": [
+              "Select rate limiting strategy (e.g., Token Bucket)"
+            ],
+            "implementation_tasks": [
+              "Implement rate limit middleware",
+              "Configure limits per user tier",
+              "Add 429 response handling"
+            ],
+            "testing_tasks": [
+              "Verify rate limit enforcement",
+              "Test burst traffic scenarios"
+            ],
+            "documentation_tasks": [
+              "Update API rate limit documentation"
+            ]
+          },
+          "acceptance_criteria": {
+            "criteria": [
+              "Rate limits are enforced",
+              "429 status code returned when exceeded",
+              "Limits are configurable"
+            ],
+            "automated_tests": true
+          },
+          "branch_name": "integration/api-rate-limit",
+          "recommended_commits": [
+            "feat: add rate limit middleware",
+            "feat: configure tier-based limits"
+          ],
+          "estimated_hours": 8,
+          "dependencies": [
+            "BG-406"
+          ],
+          "tags": [
+            "api",
+            "security",
+            "backend"
+          ],
+          "notes": "Use Redis for distributed rate limiting."
+        },
+        {
+          "id": "BG-412",
+          "title": "Integration Testing: Cross-Platform Compliance Flow",
+          "description": "Develop an end-to-end test suite that verifies a brand asset's compliance across Figma, GDocs, and Webflow.",
+          "type": "testing",
+          "status": "todo",
+          "priority": "high",
+          "scope": "Integration test suite",
+          "technical_checklist": {
+            "setup_tasks": [
+              "Setup test environment with mock services"
+            ],
+            "implementation_tasks": [
+              "Write E2E test for Figma-to-Backend flow",
+              "Write E2E test for GDocs-to-Backend flow",
+              "Write E2E test for Webflow-to-Backend flow"
+            ],
+            "testing_tasks": [
+              "Run full test suite in CI"
+            ],
+            "documentation_tasks": [
+              "Update testing strategy document"
+            ]
+          },
+          "acceptance_criteria": {
+            "criteria": [
+              "All integration flows pass",
+              "Mock services correctly simulate production",
+              "Tests run in < 5 minutes"
+            ],
+            "automated_tests": true
+          },
+          "branch_name": "integration/e2e-tests",
+          "recommended_commits": [
+            "test: add e2e integration tests",
+            "test: setup mock services"
+          ],
+          "estimated_hours": 24,
+          "dependencies": [
+            "BG-402",
+            "BG-404",
+            "BG-405"
+          ],
+          "tags": [
+            "testing",
+            "e2e",
+            "ci"
+          ],
+          "notes": "Use Playwright or Cypress for frontend-heavy integration tests."
+        }
+      ],
+      "batchNumber": 4
+    },
+    {
+      "issues": [
+        {
+          "id": "BG-501",
+          "title": "Implement Unit Test Suite for Brand Engine Core",
+          "description": "Establish a comprehensive unit testing framework for the Go-based Brand Engine, focusing on the vector logo extraction logic and tone-fingerprint calculation algorithms.",
+          "type": "testing",
+          "status": "todo",
+          "priority": "high",
+          "scope": "Brand Engine Go services",
+          "technical_checklist": {
+            "setup_tasks": [
+              "Configure Go test runner with testify/assert",
+              "Implement mock interfaces for PostgreSQL database"
+            ],
+            "implementation_tasks": [
+              "Write tests for vector normalization logic",
+              "Write tests for tone-fingerprint scoring functions",
+              "Add table-driven tests for edge-case logo inputs"
+            ],
+            "testing_tasks": [
+              "Run coverage analysis to ensure >80% branch coverage"
+            ],
+            "documentation_tasks": [
+              "Update README with instructions on running unit tests"
+            ]
+          },
+          "acceptance_criteria": {
+            "criteria": [
+              "All core business logic functions have at least 80% coverage",
+              "Tests run in under 30 seconds",
+              "Mocked database interactions prevent side effects"
+            ],
+            "automated_tests": true
+          },
+          "branch_name": "test/unit",
+          "recommended_commits": [
+            "feat: add testify framework",
+            "test: add unit tests for logo extraction logic"
+          ],
+          "estimated_hours": 12,
+          "dependencies": [],
+          "tags": [
+            "testing",
+            "go",
+            "backend"
+          ],
+          "notes": "Ensure mocks are generated using mockery for consistency."
+        },
+        {
+          "id": "BG-502",
+          "title": "End-to-End Integration Test for Scan-to-Fix-to-Retrain Loop",
+          "description": "Create an integration test suite that simulates the full lifecycle of a brand compliance scan, applying an automated fix, and verifying the subsequent LLM retrain trigger.",
+          "type": "testing",
+          "status": "todo",
+          "priority": "high",
+          "scope": "Full stack integration (API, Brand Engine, DB)",
+          "technical_checklist": {
+            "setup_tasks": [
+              "Provision ephemeral test database",
+              "Configure test environment variables"
+            ],
+            "implementation_tasks": [
+              "Create test script for asset submission",
+              "Verify fix application via API response",
+              "Assert retrain event is queued in message broker"
+            ],
+            "testing_tasks": [
+              "Validate database state after full loop"
+            ],
+            "documentation_tasks": [
+              "Document integration test flow"
+            ]
+          },
+          "acceptance_criteria": {
+            "criteria": [
+              "Full loop completes successfully",
+              "Database state reflects correct audit trail",
+              "Retrain event is successfully published"
+            ],
+            "automated_tests": true
+          },
+          "branch_name": "test/integration",
+          "recommended_commits": [
+            "test: implement E2E scan-to-fix-to-retrain flow"
+          ],
+          "estimated_hours": 16,
+          "dependencies": [
+            "BG-501"
+          ],
+          "tags": [
+            "testing",
+            "integration",
+            "e2e"
+          ],
+          "notes": "Use a containerized environment (Docker Compose) for the test run."
+        },
+        {
+          "id": "BG-503",
+          "title": "Load Testing for Concurrent Brand Compliance Scans",
+          "description": "Simulate high-concurrency scenarios to identify bottlenecks in the Brand Engine's processing pipeline during peak usage.",
+          "type": "testing",
+          "status": "todo",
+          "priority": "medium",
+          "scope": "Backend API and Brand Engine service",
+          "technical_checklist": {
+            "setup_tasks": [
+              "Install k6 for load testing",
+              "Define baseline performance metrics"
+            ],
+            "implementation_tasks": [
+              "Write k6 script for concurrent scan requests",
+              "Configure ramp-up scenarios (50, 100, 500 concurrent users)"
+            ],
+            "testing_tasks": [
+              "Execute load tests against staging environment",
+              "Analyze latency and error rate metrics"
+            ],
+            "documentation_tasks": [
+              "Summarize performance findings in Confluence"
+            ]
+          },
+          "acceptance_criteria": {
+            "criteria": [
+              "System maintains < 2s latency under 200 concurrent scans",
+              "No memory leaks detected during 30-minute soak test"
+            ],
+            "automated_tests": true
+          },
+          "branch_name": "test/load",
+          "recommended_commits": [
+            "test: add k6 load testing scripts"
+          ],
+          "estimated_hours": 10,
+          "dependencies": [
+            "BG-502"
+          ],
+          "tags": [
+            "testing",
+            "performance",
+            "load"
+          ],
+          "notes": "Monitor AWS RDS CPU utilization during tests."
+        },
+        {
+          "id": "BG-504",
+          "title": "Accessibility (a11y) Audit for Automated Fix UI",
+          "description": "Audit the React-based UI components used for displaying and applying automated brand fixes to ensure compliance with WCAG 2.1 AA standards.",
+          "type": "testing",
+          "status": "todo",
+          "priority": "medium",
+          "scope": "Frontend React components",
+          "technical_checklist": {
+            "setup_tasks": [
+              "Integrate axe-core with Jest",
+              "Add a11y linting rules to ESLint"
+            ],
+            "implementation_tasks": [
+              "Fix identified contrast issues in fix-suggestion modals",
+              "Ensure keyboard navigation support for all fix-action buttons"
+            ],
+            "testing_tasks": [
+              "Run automated a11y scans on all dashboard views"
+            ],
+            "documentation_tasks": [
+              "Update accessibility compliance report"
+            ]
+          },
+          "acceptance_criteria": {
+            "criteria": [
+              "Zero critical a11y violations",
+              "All interactive elements are keyboard accessible",
+              "Screen reader labels implemented for fix-suggestion icons"
+            ],
+            "automated_tests": true
+          },
+          "branch_name": "test/a11y",
+          "recommended_commits": [
+            "test: add axe-core integration",
+            "fix: improve keyboard accessibility for fix modals"
+          ],
+          "estimated_hours": 8,
+          "dependencies": [],
+          "tags": [
+            "testing",
+            "accessibility",
+            "frontend"
+          ],
+          "notes": "Focus specifically on the Figma plugin UI as it has unique constraints."
+        },
+        {
+          "id": "BG-505",
+          "title": "Security Penetration Testing and Vulnerability Scan",
+          "description": "Perform a comprehensive security scan to identify potential vulnerabilities and ensure the platform meets SOC-2 compliance requirements.",
+          "type": "testing",
+          "status": "todo",
+          "priority": "high",
+          "scope": "Entire infrastructure and application layer",
+          "technical_checklist": {
+            "setup_tasks": [
+              "Configure OWASP ZAP for automated scanning",
+              "Run dependency check for vulnerable packages"
+            ],
+            "implementation_tasks": [
+              "Patch identified high-risk vulnerabilities",
+              "Audit IAM roles for least privilege",
+              "Verify encryption-at-rest for sensitive brand assets"
+            ],
+            "testing_tasks": [
+              "Run penetration test report generation"
+            ],
+            "documentation_tasks": [
+              "Update security compliance documentation"
+            ]
+          },
+          "acceptance_criteria": {
+            "criteria": [
+              "No high or critical vulnerabilities found",
+              "All dependencies updated to secure versions",
+              "SOC-2 audit readiness checklist completed"
+            ],
+            "automated_tests": true
+          },
+          "branch_name": "test/security",
+          "recommended_commits": [
+            "test: run security vulnerability scan",
+            "fix: patch identified security vulnerabilities"
+          ],
+          "estimated_hours": 20,
+          "dependencies": [
+            "BG-502"
+          ],
+          "tags": [
+            "testing",
+            "security",
+            "compliance"
+          ],
+          "notes": "Ensure all secrets are rotated post-testing."
+        },
+        {
+          "id": "BG-506",
+          "title": "Implement Automated Regression Suite for Figma Plugin",
+          "description": "Develop a regression testing suite for the Figma plugin to ensure that core brand compliance features remain functional after updates.",
+          "type": "testing",
+          "status": "todo",
+          "priority": "high",
+          "scope": "Figma plugin frontend and bridge communication",
+          "technical_checklist": {
+            "setup_tasks": [
+              "Setup Playwright for Figma plugin testing"
+            ],
+            "implementation_tasks": [
+              "Write tests for asset selection and scan trigger",
+              "Verify UI feedback after fix application"
+            ],
+            "testing_tasks": [
+              "Execute regression suite against latest build"
+            ],
+            "documentation_tasks": [
+              "Document plugin testing procedures"
+            ]
+          },
+          "acceptance_criteria": {
+            "criteria": [
+              "Core plugin features pass regression",
+              "Communication bridge between plugin and backend is verified"
+            ],
+            "automated_tests": true
+          },
+          "branch_name": "test/unit",
+          "recommended_commits": [
+            "test: add regression tests for Figma plugin"
+          ],
+          "estimated_hours": 10,
+          "dependencies": [
+            "BG-501"
+          ],
+          "tags": [
+            "testing",
+            "figma",
+            "regression"
+          ],
+          "notes": "Use Figma's development mode for testing hooks."
+        },
+        {
+          "id": "BG-507",
+          "title": "Database Schema Integrity Testing",
+          "description": "Implement tests to ensure that database migrations and schema changes do not break existing data relationships or integrity constraints.",
+          "type": "testing",
+          "status": "todo",
+          "priority": "medium",
+          "scope": "PostgreSQL schema and migration scripts",
+          "technical_checklist": {
+            "setup_tasks": [
+              "Configure test database migration runner"
+            ],
+            "implementation_tasks": [
+              "Write tests to verify migration up/down cycles",
+              "Add integrity checks for foreign key relationships"
+            ],
+            "testing_tasks": [
+              "Validate schema against production snapshot"
+            ],
+            "documentation_tasks": [
+              "Update database migration guide"
+            ]
+          },
+          "acceptance_criteria": {
+            "criteria": [
+              "All migrations run successfully in test environment",
+              "Data integrity maintained after schema updates"
+            ],
+            "automated_tests": true
+          },
+          "branch_name": "test/integration",
+          "recommended_commits": [
+            "test: add database schema integrity tests"
+          ],
+          "estimated_hours": 6,
+          "dependencies": [
+            "BG-502"
+          ],
+          "tags": [
+            "testing",
+            "database",
+            "migrations"
+          ],
+          "notes": "Use a tool like 'go-migrate' for testing the migration lifecycle."
+        }
+      ],
+      "batchNumber": 5
+    },
+    {
+      "issues": [
+        {
+          "id": "BG-DEP-001",
+          "title": "Provision Core AWS Infrastructure via Terraform",
+          "description": "Establish the foundational AWS infrastructure including VPC, multi-AZ subnets, RDS PostgreSQL instance, and ECS Fargate clusters to support the BrandGuard microservices architecture.",
+          "type": "deployment",
+          "status": "todo",
+          "priority": "high",
+          "scope": "VPC networking, RDS security groups, ECS cluster definitions, and IAM roles for service execution.",
+          "technical_checklist": {
+            "setup_tasks": [
+              "Initialize Terraform backend with S3/DynamoDB state locking",
+              "Define provider configurations for AWS region"
+            ],
+            "implementation_tasks": [
+              "Create VPC with public/private subnets",
+              "Provision RDS PostgreSQL instance with multi-AZ enabled",
+              "Define ECS Fargate cluster and task definitions"
+            ],
+            "testing_tasks": [
+              "Run terraform plan to verify resource graph",
+              "Validate connectivity between ECS and RDS"
+            ],
+            "documentation_tasks": [
+              "Update infrastructure README with deployment instructions"
+            ]
+          },
+          "acceptance_criteria": {
+            "criteria": [
+              "Infrastructure provisions successfully via terraform apply",
+              "RDS is accessible only from within the VPC",
+              "ECS cluster is ready to receive container deployments"
+            ],
+            "automated_tests": true
+          },
+          "branch_name": "deploy/terraform",
+          "recommended_commits": [
+            "feat: initialize terraform project",
+            "feat: provision vpc and rds resources"
+          ],
+          "estimated_hours": 16,
+          "dependencies": [],
+          "tags": [
+            "infrastructure",
+            "terraform",
+            "aws"
+          ],
+          "notes": "Ensure RDS credentials are managed via AWS Secrets Manager."
+        },
+        {
+          "id": "BG-DEP-002",
+          "title": "Configure Production Domain and SSL Termination",
+          "description": "Setup Route53 DNS records, ACM certificates, and Application Load Balancer (ALB) listeners to handle secure HTTPS traffic for the production environment.",
+          "type": "deployment",
+          "status": "todo",
+          "priority": "high",
+          "scope": "Route53 configuration, ACM certificate validation, and ALB listener rules.",
+          "technical_checklist": {
+            "setup_tasks": [
+              "Import existing domain into Route53",
+              "Request ACM certificate for production domain"
+            ],
+            "implementation_tasks": [
+              "Configure ALB with HTTPS listener",
+              "Implement SSL redirection from HTTP to HTTPS",
+              "Update Route53 A-records to point to ALB"
+            ],
+            "testing_tasks": [
+              "Verify SSL handshake via curl",
+              "Confirm DNS propagation"
+            ],
+            "documentation_tasks": [
+              "Document domain management procedures"
+            ]
+          },
+          "acceptance_criteria": {
+            "criteria": [
+              "Site is accessible via HTTPS",
+              "SSL certificate is valid and trusted",
+              "HTTP requests are automatically redirected to HTTPS"
+            ],
+            "automated_tests": true
+          },
+          "branch_name": "deploy/prod",
+          "recommended_commits": [
+            "feat: configure alb and ssl",
+            "feat: setup route53 records"
+          ],
+          "estimated_hours": 6,
+          "dependencies": [
+            "BG-DEP-001"
+          ],
+          "tags": [
+            "networking",
+            "dns",
+            "security"
+          ],
+          "notes": "Ensure ACM validation is completed before finalizing DNS records."
+        },
+        {
+          "id": "BG-DEP-003",
+          "title": "Implement Zero-Downtime Database Migration Pipeline",
+          "description": "Integrate a migration tool (e.g., golang-migrate) into the CI/CD pipeline to ensure database schema updates are applied safely without service interruption.",
+          "type": "deployment",
+          "status": "todo",
+          "priority": "high",
+          "scope": "Migration script structure, CI/CD pipeline integration, and rollback strategy.",
+          "technical_checklist": {
+            "setup_tasks": [
+              "Select migration tool compatible with Go",
+              "Create migration directory structure"
+            ],
+            "implementation_tasks": [
+              "Write initial schema migration scripts",
+              "Add migration step to CI/CD pipeline",
+              "Implement pre-deployment health check for DB connectivity"
+            ],
+            "testing_tasks": [
+              "Test migration application against staging DB",
+              "Verify rollback functionality"
+            ],
+            "documentation_tasks": [
+              "Document migration workflow for developers"
+            ]
+          },
+          "acceptance_criteria": {
+            "criteria": [
+              "Migrations run automatically on deployment",
+              "Schema changes are backward compatible",
+              "Pipeline fails if migration fails"
+            ],
+            "automated_tests": true
+          },
+          "branch_name": "deploy/migrations",
+          "recommended_commits": [
+            "feat: add migration tool",
+            "feat: integrate migrations into ci pipeline"
+          ],
+          "estimated_hours": 10,
+          "dependencies": [
+            "BG-DEP-001"
+          ],
+          "tags": [
+            "database",
+            "ci-cd",
+            "migrations"
+          ],
+          "notes": "Focus on additive changes to maintain zero-downtime."
+        },
+        {
+          "id": "BG-DEP-004",
+          "title": "Setup CloudWatch Dashboards and PagerDuty Alerts",
+          "description": "Establish observability by creating CloudWatch dashboards for service health and configuring PagerDuty integration for critical error alerts.",
+          "type": "deployment",
+          "status": "todo",
+          "priority": "medium",
+          "scope": "CloudWatch metrics, dashboard creation, and SNS/PagerDuty notification channels.",
+          "technical_checklist": {
+            "setup_tasks": [
+              "Configure CloudWatch agent on ECS tasks",
+              "Create PagerDuty service integration"
+            ],
+            "implementation_tasks": [
+              "Define CloudWatch dashboards for CPU/Memory/Latency",
+              "Create CloudWatch Alarms for 5xx errors",
+              "Configure SNS topic to trigger PagerDuty"
+            ],
+            "testing_tasks": [
+              "Simulate error to trigger alert",
+              "Verify dashboard data population"
+            ],
+            "documentation_tasks": [
+              "Update incident response runbook"
+            ]
+          },
+          "acceptance_criteria": {
+            "criteria": [
+              "Dashboard displays real-time service metrics",
+              "Alerts trigger PagerDuty on service failure",
+              "Metrics are correctly aggregated"
+            ],
+            "automated_tests": false
+          },
+          "branch_name": "deploy/monitoring",
+          "recommended_commits": [
+            "feat: add cloudwatch dashboards",
+            "feat: configure pagerduty alerts"
+          ],
+          "estimated_hours": 8,
+          "dependencies": [
+            "BG-DEP-001"
+          ],
+          "tags": [
+            "monitoring",
+            "observability",
+            "alerts"
+          ],
+          "notes": "Avoid alert fatigue by setting appropriate thresholds."
+        },
+        {
+          "id": "BG-DEP-005",
+          "title": "Create Enterprise On-Prem Deployment Script",
+          "description": "Develop a portable shell script or Ansible playbook that automates the deployment of the BrandGuard stack into a client's private VPC.",
+          "type": "deployment",
+          "status": "todo",
+          "priority": "low",
+          "scope": "Container orchestration, environment variable injection, and network configuration for external environments.",
+          "technical_checklist": {
+            "setup_tasks": [
+              "Define required environment variables",
+              "Create template configuration files"
+            ],
+            "implementation_tasks": [
+              "Write bash script for container orchestration",
+              "Implement validation checks for client environment",
+              "Add logging for deployment progress"
+            ],
+            "testing_tasks": [
+              "Test script in isolated sandbox environment",
+              "Verify container startup sequence"
+            ],
+            "documentation_tasks": [
+              "Create client-facing deployment guide"
+            ]
+          },
+          "acceptance_criteria": {
+            "criteria": [
+              "Script successfully deploys stack in test VPC",
+              "Configuration is easily customizable for clients",
+              "Deployment logs are clear and actionable"
+            ],
+            "automated_tests": false
+          },
+          "branch_name": "deploy/on-prem",
+          "recommended_commits": [
+            "feat: create on-prem deployment script",
+            "docs: add on-prem deployment guide"
+          ],
+          "estimated_hours": 12,
+          "dependencies": [
+            "BG-DEP-001"
+          ],
+          "tags": [
+            "on-prem",
+            "automation",
+            "enterprise"
+          ],
+          "notes": "Ensure sensitive data is not hardcoded in scripts."
+        }
+      ],
+      "batchNumber": 6
+    },
+    {
+      "issues": [
+        {
+          "id": "BG-DOC-001",
+          "title": "Implement OpenAPI/Swagger Specification for Brand Engine API",
+          "description": "Generate comprehensive OpenAPI 3.0 specifications for the Go-based Brand Engine microservice, covering logo extraction and tone-fingerprint endpoints.",
+          "type": "documentation",
+          "status": "todo",
+          "priority": "high",
+          "scope": "All public-facing REST endpoints in the Brand Engine service.",
+          "technical_checklist": {
+            "setup_tasks": [
+              "Install swaggo/swag Go library",
+              "Configure swagger.json generation pipeline"
+            ],
+            "implementation_tasks": [
+              "Annotate controller methods with Swagger tags",
+              "Define request/response schemas for logo extraction",
+              "Define tone-fingerprint model input/output structures"
+            ],
+            "testing_tasks": [
+              "Validate generated spec against Swagger Editor",
+              "Verify endpoint accessibility via Swagger UI"
+            ],
+            "documentation_tasks": [
+              "Update API README with link to Swagger UI"
+            ]
+          },
+          "acceptance_criteria": {
+            "criteria": [
+              "All public endpoints documented",
+              "Models correctly reflect Go structs",
+              "Swagger UI renders successfully"
+            ],
+            "automated_tests": true
+          },
+          "branch_name": "docs/api",
+          "recommended_commits": [
+            "feat: add swagger annotations to brand engine",
+            "chore: generate openapi spec"
+          ],
+          "estimated_hours": 12,
+          "dependencies": [],
+          "tags": [
+            "api",
+            "documentation",
+            "go"
+          ],
+          "notes": "Ensure sensitive internal endpoints are excluded from the public spec."
+        },
+        {
+          "id": "BG-DOC-002",
+          "title": "Create Developer Onboarding Guide",
+          "description": "Develop a centralized onboarding guide to streamline the setup process for new engineers joining the BrandGuard project.",
+          "type": "documentation",
+          "status": "todo",
+          "priority": "medium",
+          "scope": "Local development environment setup, architecture overview, and contribution guidelines.",
+          "technical_checklist": {
+            "setup_tasks": [
+              "Create onboarding directory in docs/"
+            ],
+            "implementation_tasks": [
+              "Document AWS CLI and localstack setup",
+              "Detail Go and React environment requirements",
+              "Create 'First Day' checklist"
+            ],
+            "testing_tasks": [
+              "Verify setup steps on a clean machine"
+            ],
+            "documentation_tasks": [
+              "Publish onboarding guide to internal wiki"
+            ]
+          },
+          "acceptance_criteria": {
+            "criteria": [
+              "New developer can run the project locally within 2 hours",
+              "All environment variables documented"
+            ],
+            "automated_tests": false
+          },
+          "branch_name": "docs/onboarding",
+          "recommended_commits": [
+            "docs: create developer onboarding guide"
+          ],
+          "estimated_hours": 6,
+          "dependencies": [],
+          "tags": [
+            "onboarding",
+            "documentation"
+          ],
+          "notes": "Include troubleshooting section for common Docker/AWS issues."
+        },
+        {
+          "id": "BG-DOC-003",
+          "title": "Establish Architecture Decision Records (ADR) Framework",
+          "description": "Initialize the ADR repository and document the top 3 critical architectural decisions made during the initial development phase.",
+          "type": "documentation",
+          "status": "todo",
+          "priority": "medium",
+          "scope": "Core architectural choices (e.g., Go microservices, PostgreSQL, LLM pipeline).",
+          "technical_checklist": {
+            "setup_tasks": [
+              "Create docs/adr directory",
+              "Select ADR template format"
+            ],
+            "implementation_tasks": [
+              "Draft ADR for Go microservices choice",
+              "Draft ADR for PostgreSQL usage",
+              "Draft ADR for LLM fine-tuning pipeline"
+            ],
+            "testing_tasks": [
+              "Peer review of ADR content"
+            ],
+            "documentation_tasks": [
+              "Link ADRs in main README"
+            ]
+          },
+          "acceptance_criteria": {
+            "criteria": [
+              "ADRs follow standard format",
+              "Decisions are clear and context-aware"
+            ],
+            "automated_tests": false
+          },
+          "branch_name": "docs/adr",
+          "recommended_commits": [
+            "docs: initialize ADR framework",
+            "docs: add initial architecture decisions"
+          ],
+          "estimated_hours": 8,
+          "dependencies": [],
+          "tags": [
+            "architecture",
+            "documentation"
+          ],
+          "notes": "Focus on the 'why' behind the technology choices."
+        },
+        {
+          "id": "BG-DOC-004",
+          "title": "Develop End-User Help Center Documentation",
+          "description": "Create user-facing documentation for the Figma, Slack, and Webflow plugins to reduce support overhead.",
+          "type": "documentation",
+          "status": "todo",
+          "priority": "medium",
+          "scope": "User guides for all three platform plugins.",
+          "technical_checklist": {
+            "setup_tasks": [
+              "Create docs/user-guide directory"
+            ],
+            "implementation_tasks": [
+              "Write Figma plugin installation guide",
+              "Write Slack integration guide",
+              "Write Webflow compliance check guide"
+            ],
+            "testing_tasks": [
+              "Verify screenshots match current UI"
+            ],
+            "documentation_tasks": [
+              "Format as Markdown for static site generator"
+            ]
+          },
+          "acceptance_criteria": {
+            "criteria": [
+              "Step-by-step guides for all platforms",
+              "Clear troubleshooting section"
+            ],
+            "automated_tests": false
+          },
+          "branch_name": "docs/user-guide",
+          "recommended_commits": [
+            "docs: create user help center guides"
+          ],
+          "estimated_hours": 16,
+          "dependencies": [],
+          "tags": [
+            "user-guide",
+            "documentation"
+          ],
+          "notes": "Use clear, non-technical language for end-users."
+        },
+        {
+          "id": "BG-DOC-005",
+          "title": "Draft SOC-2 Compliance Documentation",
+          "description": "Prepare the necessary documentation and evidence mapping for SOC-2 Type II audit readiness.",
+          "type": "documentation",
+          "status": "todo",
+          "priority": "high",
+          "scope": "Security policies, access control documentation, and data handling procedures.",
+          "technical_checklist": {
+            "setup_tasks": [
+              "Create docs/compliance directory"
+            ],
+            "implementation_tasks": [
+              "Document data encryption at rest/transit",
+              "Draft access control policy",
+              "Map system logs to audit requirements"
+            ],
+            "testing_tasks": [
+              "Internal audit review"
+            ],
+            "documentation_tasks": [
+              "Finalize compliance report draft"
+            ]
+          },
+          "acceptance_criteria": {
+            "criteria": [
+              "SOC-2 controls mapped to system features",
+              "Security policies documented"
+            ],
+            "automated_tests": false
+          },
+          "branch_name": "docs/compliance",
+          "recommended_commits": [
+            "docs: draft SOC-2 compliance documentation"
+          ],
+          "estimated_hours": 20,
+          "dependencies": [],
+          "tags": [
+            "compliance",
+            "security",
+            "documentation"
+          ],
+          "notes": "Consult with legal/security team for final sign-off."
+        },
+        {
+          "id": "BG-DOC-006",
+          "title": "Automate Documentation Deployment Pipeline",
+          "description": "Configure a CI/CD pipeline to automatically build and deploy documentation to a static site host (e.g., GitHub Pages or AWS S3).",
+          "type": "deployment",
+          "status": "todo",
+          "priority": "medium",
+          "scope": "CI/CD configuration for docs/ directory.",
+          "technical_checklist": {
+            "setup_tasks": [
+              "Select static site generator (e.g., Docusaurus)"
+            ],
+            "implementation_tasks": [
+              "Configure GitHub Actions workflow",
+              "Set up S3 bucket for hosting",
+              "Configure CloudFront distribution"
+            ],
+            "testing_tasks": [
+              "Verify auto-deployment on push to main"
+            ],
+            "documentation_tasks": [
+              "Update README with deployment instructions"
+            ]
+          },
+          "acceptance_criteria": {
+            "criteria": [
+              "Documentation site builds automatically",
+              "Deployment is triggered on merge"
+            ],
+            "automated_tests": true
+          },
+          "branch_name": "docs/ci-cd",
+          "recommended_commits": [
+            "ci: add documentation deployment pipeline"
+          ],
+          "estimated_hours": 10,
+          "dependencies": [
+            "BG-DOC-001"
+          ],
+          "tags": [
+            "ci-cd",
+            "deployment",
+            "documentation"
+          ],
+          "notes": "Ensure build process handles Swagger UI generation."
+        },
+        {
+          "id": "BG-DOC-007",
+          "title": "Review and Standardize Documentation Style Guide",
+          "description": "Create a style guide for all project documentation to ensure consistency in tone, formatting, and terminology.",
+          "type": "documentation",
+          "status": "todo",
+          "priority": "low",
+          "scope": "All markdown files in the docs/ directory.",
+          "technical_checklist": {
+            "setup_tasks": [
+              "Create STYLE_GUIDE.md"
+            ],
+            "implementation_tasks": [
+              "Define naming conventions",
+              "Define formatting standards",
+              "Create template for new docs"
+            ],
+            "testing_tasks": [
+              "Audit existing docs against style guide"
+            ],
+            "documentation_tasks": [
+              "Update all existing docs to match style"
+            ]
+          },
+          "acceptance_criteria": {
+            "criteria": [
+              "Style guide exists",
+              "All docs follow the guide"
+            ],
+            "automated_tests": false
+          },
+          "branch_name": "docs/style-guide",
+          "recommended_commits": [
+            "docs: add project style guide",
+            "refactor: standardize docs to style guide"
+          ],
+          "estimated_hours": 6,
+          "dependencies": [],
+          "tags": [
+            "documentation",
+            "style"
+          ],
+          "notes": "Keep it simple to encourage adoption."
+        }
+      ],
+      "batchNumber": 7
+    }
+  ]
+}
